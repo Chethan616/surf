@@ -4,6 +4,7 @@ import 'package:perplexity_clone/pages/chat_page.dart';
 import 'package:perplexity_clone/services/chat_web_service.dart';
 import 'package:perplexity_clone/theme/colors.dart';
 import 'package:perplexity_clone/widgets/search_bar_button.dart';
+import 'dart:async';
 
 class SearchSection extends StatefulWidget {
   const SearchSection({super.key});
@@ -14,11 +15,35 @@ class SearchSection extends StatefulWidget {
 
 class _SearchSectionState extends State<SearchSection> {
   final queryController = TextEditingController();
+  final String _fullText = 'Surf';
+  String _displayedText = '';
+  int _currentIndex = 0;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _startAnimation();
+  }
+
+  void _startAnimation() {
+    _timer = Timer.periodic(Duration(milliseconds: 150), (timer) {
+      if (_currentIndex < _fullText.length) {
+        setState(() {
+          _displayedText = _fullText.substring(0, _currentIndex + 1);
+          _currentIndex++;
+        });
+      } else {
+        _timer?.cancel();
+      }
+    });
+  }
 
   @override
   void dispose() {
-    super.dispose();
+    _timer?.cancel();
     queryController.dispose();
+    super.dispose();
   }
 
   @override
@@ -27,7 +52,7 @@ class _SearchSectionState extends State<SearchSection> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          'Surf the Knowledge',
+          _displayedText,
           style: GoogleFonts.ibmPlexMono(
             fontSize: 40,
             fontWeight: FontWeight.w400,
